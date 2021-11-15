@@ -1,9 +1,7 @@
-function App() {
+import Login from "./components/Login";
+
+export default function App() {
   return (
-    <div>
-      <h1>Hey</h1>
-    </div>
+    <Login />
   );
 }
-
-export default App;

@@ -3,6 +3,10 @@ import styled from 'styled-components'
 import useForm from '../hooks/useForm'
 import validateLogin from '../utils/validateLogin'
 
+import avatarDefault from '../img/penguin-default.png'
+import avatarLookingDown from '../img/penguin-looking-down.png'
+import avatarClosingEyes1 from '../img/penguin-eyes-closed-1.png'
+import avatarClosingEyes2 from '../img/penguin-eyes-closed-2.png'
 
 const Container = styled.div`
     display: flex;
@@ -14,7 +18,7 @@ const Container = styled.div`
 `
 
 const Avatar = styled.div`
-    width: 10%;
+    width: 30%;
     position: relative;
 
     &:after {
@@ -29,7 +33,15 @@ const Avatar = styled.div`
         border-radius: 50%;
         z-index: -1;
     }
-`
+
+    @media only screen and (min-width: 720px) {
+        width: 15%;
+    }
+
+    @media only screen and (min-width: 1200px) {
+        width: 10%;
+    }
+ `
 
 const AvatarHead = styled.img`
     width: 100%;
@@ -80,11 +92,9 @@ const InputError = styled.p`
 `
 
 export default function Login() {
-    const avatarDefault = 'img/penguin/penguin-default.png'
-    const avatarLookingDown = 'img/penguin/penguin-looking-down.png'
     const avatarClosingEyes = [
-        'img/penguin/penguin-eyes-closed-1.png',
-        'img/penguin/penguin-eyes-closed-2.png',
+        avatarClosingEyes1,
+        avatarClosingEyes2
     ]
 
     const [avatarSrc, setAvatarSrc] = useState(avatarDefault)

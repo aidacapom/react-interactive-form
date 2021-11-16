@@ -2,6 +2,8 @@
 
 An Interactive Login with basic form validation and an avatar animated when the user interacts with the form. 
 
+[![CodeFactor](https://www.codefactor.io/repository/github/aidacapom/react-interactive-form/badge)](https://www.codefactor.io/repository/github/aidacapom/react-interactive-form)
+
 ## Technologies usage
 This project uses React and styled-components. 
 

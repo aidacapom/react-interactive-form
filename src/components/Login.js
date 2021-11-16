@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import useForm from '../hooks/useForm'
 import validateLogin from '../utils/validateLogin'
@@ -13,10 +13,31 @@ const Container = styled.div`
     padding: 1em;
 `
 
-const Avatar = styled.img`
-    border-radius: 50%;
-    padding: 2.25em 1.5em;
-    background: #ffffcc;
+const Avatar = styled.div`
+    width: 10%;
+    position: relative;
+
+    &:after {
+        position: absolute;
+        content: '';
+        background: #2b2b2b;
+        width: 90%;
+        height: 100%;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%);
+        border-radius: 50%;
+        z-index: -1;
+    }
+`
+
+const AvatarHead = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    margin-bottom: 2.2em;
+    transition: all .2s ease;
+    transform: rotate(${props => props.rotation}deg)
 `
 
 const FormContainer = styled.section`
@@ -27,6 +48,7 @@ const FormContainer = styled.section`
     max-width: 540px;
     background-color: #fff;
     border-radius: .5em;
+    border: 3px solid #000;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, .2);
     padding: 1.25em 5% 2.5em;
 `
@@ -45,10 +67,11 @@ const Input = styled.input`
     outline: none;
     border: none;
     font-size: 1rem;
-    background-color: #eee;
+    background-color: #f7f7f7;
 
     &:focus {
-        border: 2px solid teal;
+        border: 2px solid #faed75;
+        background: #fff;
     }
 `
 
@@ -57,6 +80,16 @@ const InputError = styled.p`
 `
 
 export default function Login() {
+    const avatarDefault = 'img/penguin/penguin-default.png'
+    const avatarLookingDown = 'img/penguin/penguin-looking-down.png'
+    const avatarClosingEyes = [
+        'img/penguin/penguin-eyes-closed-1.png',
+        'img/penguin/penguin-eyes-closed-2.png',
+    ]
+
+    const [avatarSrc, setAvatarSrc] = useState(avatarDefault)
+    const [avatarRotation, setAvatarRotation] = useState(0)
+
     const passwordRef = useRef(null)
 
     const { formValues, handleChange, handleSubmit, errors } = useForm ({
@@ -66,20 +99,74 @@ export default function Login() {
 
     const { id, password } = formValues
 
+    const closeAvatarEyes = () => {
+        setTimeout(() => {
+            let cont = 0;
+            const closeEyes = setInterval(() => {
+                setAvatarSrc(avatarClosingEyes[cont])
+
+                if(cont < avatarClosingEyes.length - 1) {
+                    cont++
+                } else {
+                    clearInterval(closeEyes)
+                }
+            }, 50)
+        }, 300) 
+    }
+
     const handleEnterKey = (event) => {
         if (event.key === "Enter") {
             if(document.activeElement !== passwordRef.current) {
                 passwordRef.current.focus()
             } else {
                 handleSubmit(event)
+                passwordRef.current.blur()
+            }
+
+            return true
+        }
+        return false
+    }
+
+    const handleAvatarReading = (event) => {
+        if(!handleEnterKey(event)) {
+            const length = event.target.value.length
+            if(length >= 0 && length <= 5) {
+                setAvatarRotation(12)
+            } else if(length >= 6 && length <= 16) {
+                setAvatarRotation(6)
+            } else if(length >= 17 && length <= 27) {
+                setAvatarRotation(0)
+            } else if(length >= 28 && length <= 38) {
+                    setAvatarRotation(-6)
+            } else {
+                setAvatarRotation(-12)
             }
         }
     }
 
+    const handleGetFocus = (event) => { 
+        setAvatarRotation(0)
+
+        const name = event.target.name
+        if(name === 'id') {
+            setAvatarSrc(avatarLookingDown)
+        } else if(name === 'password') {
+            closeAvatarEyes()
+        }
+    }
+
+    const handleLoseFocus = () => {
+        setAvatarSrc(avatarDefault)
+    }
+
     return (
         <Container>
+            <Avatar>
+                <AvatarHead src={avatarSrc} rotation={avatarRotation} />
+            </Avatar>
+            
             <FormContainer>
-                <Avatar src="img/penguin-default.png"/>
                 <Form onSubmit={handleSubmit}>
                     <Input 
                         type="text" 
@@ -88,7 +175,9 @@ export default function Login() {
                         aria-label="ID"
                         value={id}
                         onChange={handleChange}
-                        onKeyDown={handleEnterKey}
+                        onFocus={handleGetFocus}
+                        onBlur={handleLoseFocus}
+                        onKeyDown={handleAvatarReading}
                     />
 
                     {errors.id && <InputError>{errors.id}</InputError>}
@@ -100,6 +189,8 @@ export default function Login() {
                         aria-label="Password"
                         value={password}
                         onChange={handleChange}
+                        onFocus={handleGetFocus}
+                        onBlur={handleLoseFocus}
                         onKeyDown={handleEnterKey}
                         ref={passwordRef}
                     />
